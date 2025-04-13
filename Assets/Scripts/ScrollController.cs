@@ -166,17 +166,17 @@ public class ScrollController : MonoBehaviour
 
         UpdateItemViews(_currentCenteredIndex);//can update view after detaching my player item
         
-        if (Math.Abs(targetCenteredIndex - _currentCenteredIndex) > totalItemCount / 2)
+        int verticalDisplacementSteps = Math.Abs(targetCenteredIndex - _currentCenteredIndex);
+        
+        if (verticalDisplacementSteps > totalItemCount / 2)
         {
             detachedCopy.transform.DOLocalMove(Vector3.zero, 0.5f);//TODO:tween myplayeritemview to localpos = 0 if its on the way
         }
-        
         detachedCopy.transform.DOScale(Vector3.one * meItemMovingScale, 0.5f);//scale up when starting to move
         
-        int verticalDisplacementSteps = Math.Abs(targetCenteredIndex - _currentCenteredIndex);
         //bool rankUp = targetCenteredIndex < _currentCenteredIndex;
         bool rankUp = myIndexNew < _myIndex;
-        bool canReachNearTarget = Math.Abs(targetCenteredIndex - myIndexNew) == 1; 
+        bool canReachNearTarget = Math.Abs(targetCenteredIndex - myIndexNew) == 1 || verticalDisplacementSteps < 1; 
         StartCoroutine(ScrollRoutine(_currentCenteredIndex, verticalDisplacementSteps,
             !rankUp, canReachNearTarget,
             detachedCopy.GetComponent<PlayerItemController>(), myPlayerDataNew.score,
