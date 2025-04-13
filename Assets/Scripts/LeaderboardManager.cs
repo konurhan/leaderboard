@@ -14,9 +14,19 @@ public class LeaderboardManager : MonoBehaviour
     private int _myDataIndex;
 
     public const string MyId = "me";
+    
+    public static LeaderboardManager Instance { get; private set; }
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         Application.targetFrameRate = 60;
         TextAsset jsonText = Resources.Load<TextAsset>("sample_leaderboard");
         _playerDataList = JsonUtility.FromJson<PlayerDataList>(jsonText.text);
@@ -34,7 +44,7 @@ public class LeaderboardManager : MonoBehaviour
         leaderboardScrollController.Initialize(_playerDataList, _myDataIndex);
     }
     
-    private void UpdateScrollController()
+    public void UpdateScrollController()
     {
         PlayerData myPlayerData;
         if (putUserInRank)
@@ -49,6 +59,16 @@ public class LeaderboardManager : MonoBehaviour
         leaderboardScrollController.UpdateViewAndScroll(_playerDataList, myPlayerData, _myDataIndex);
     }
 
+    public void InsertSortAndCache(PlayerData playerData = null)
+    {
+        if (playerData != null)
+        {
+            _playerDataList.players.Add(playerData);
+        }
+        SortPlayersByScoreDescending();
+        CacheMyPlayerDataIndex();
+    }
+    
     private void CacheMyPlayerDataIndex()
     {
         for (int i = 0; i < _playerDataList.players.Count; i++)

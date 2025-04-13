@@ -17,11 +17,20 @@ public class PlayerItemController : MonoBehaviour
     private PlayerData _playerData;
     public bool IsMe;
     
+    private Coroutine _scoreDiffRoutine;
+    
     public void Initialize(Transform playerItemParent, Transform playerMeParent, PlayerData playerData, int rank)
     {
         _playerItemParent = playerItemParent;
         _playerMeParent = playerMeParent;
         SetPlayerData(playerData, rank);
+    }
+
+    public void Uninitialize()
+    {
+        _playerItemParent = null;
+        _playerMeParent = null;
+        _playerData = null;
     }
     
     public void SetPlayerData(PlayerData playerData, int rank)
@@ -40,4 +49,51 @@ public class PlayerItemController : MonoBehaviour
             bgSprite.color = Color.red;
         }
     }
+
+    public string GetId()
+    {
+        if (_playerData == null)
+        {
+            return "";
+        }
+        return _playerData.id;
+    }
+
+    public void PlayScoreTween(int targetScore, float duration)
+    {
+        if (_scoreDiffRoutine != null)
+        {
+            StopCoroutine(_scoreDiffRoutine);
+        }
+        _scoreDiffRoutine = StartCoroutine(ChangeScoreText(targetScore, duration));
+    }
+
+    private IEnumerator ChangeScoreText(int targetScore, float duration, float refreshRate = 30f)
+    {
+        int startScore = int.Parse(scoreText.text);
+        float elapsed = 0f;
+        float refreshInterval = 1f / refreshRate;
+        float lastUpdate = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            if (elapsed - lastUpdate >= refreshInterval)
+            {
+                lastUpdate = elapsed;
+
+                float t = Mathf.Clamp01(elapsed / duration);
+                int currentDisplayScore = Mathf.RoundToInt(Mathf.Lerp(startScore, targetScore, t));
+                scoreText.text = currentDisplayScore.ToString();
+            }
+
+            yield return null;
+        }
+        
+        scoreText.text = targetScore.ToString();
+        _scoreDiffRoutine = null;
+    }
+
+
 }

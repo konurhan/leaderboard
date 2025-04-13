@@ -1,0 +1,154 @@
+{
+    "players": [
+        {
+            "id": "user_001",
+            "nickname": "Player_001",
+            "score": 1887
+        },
+        {
+            "id": "me",
+            "nickname": "Me",
+            "score": 1739
+        },
+        {
+            "id": "user_016",
+            "nickname": "Player_016",
+            "score": 1669
+        },
+        {
+            "id": "user_024",
+            "nickname": "Player_024",
+            "score": 1654
+        },
+        {
+            "id": "user_028",
+            "nickname": "Player_028",
+            "score": 1616
+        },
+        {
+            "id": "user_019",
+            "nickname": "Player_019",
+            "score": 1598
+        },
+        {
+            "id": "user_020",
+            "nickname": "Player_020",
+            "score": 1597
+        },
+        {
+            "id": "user_018",
+            "nickname": "Player_018",
+            "score": 1565
+        },
+        {
+            "id": "user_008",
+            "nickname": "Player_008",
+            "score": 1529
+        },
+        {
+            "id": "user_013",
+            "nickname": "Player_013",
+            "score": 1501
+        },
+        {
+            "id": "user_029",
+            "nickname": "Player_029",
+            "score": 1457
+        },
+        {
+            "id": "user_023",
+            "nickname": "Player_023",
+            "score": 1438
+        },
+        {
+            "id": "user_009",
+            "nickname": "Player_009",
+            "score": 1425
+        },
+        {
+            "id": "user_026",
+            "nickname": "Player_026",
+            "score": 1425
+        },
+        {
+            "id": "user_017",
+            "nickname": "Player_017",
+            "score": 1362
+        },
+        {
+            "id": "user_022",
+            "nickname": "Player_022",
+            "score": 1349
+        },
+        {
+            "id": "user_030",
+            "nickname": "Player_030",
+            "score": 1298
+        },
+        {
+            "id": "user_014",
+            "nickname": "Player_014",
+            "score": 1177
+        },
+        {
+            "id": "user_027",
+            "nickname": "Player_027",
+            "score": 1112
+        },
+        {
+            "id": "user_003",
+            "nickname": "Player_003",
+            "score": 1102
+        },
+        {
+            "id": "user_025",
+            "nickname": "Player_025",
+            "score": 1098
+        },
+        {
+            "id": "user_006",
+            "nickname": "Player_006",
+            "score": 1087
+        },
+        {
+            "id": "user_005",
+            "nickname": "Player_005",
+            "score": 1060
+        },
+        {
+            "id": "user_015",
+            "nickname": "Player_015",
+            "score": 1039
+        },
+        {
+            "id": "user_021",
+            "nickname": "Player_021",
+            "score": 1037
+        },
+        {
+            "id": "user_010",
+            "nickname": "Player_010",
+            "score": 1034
+        },
+        {
+            "id": "user_011",
+            "nickname": "Player_011",
+            "score": 1030
+        },
+        {
+            "id": "user_012",
+            "nickname": "Player_012",
+            "score": 1017
+        },
+        {
+            "id": "user_004",
+            "nickname": "Player_004",
+            "score": 1014
+        },
+        {
+            "id": "user_007",
+            "nickname": "Player_007",
+            "score": 1011
+        }
+    ]
+}
