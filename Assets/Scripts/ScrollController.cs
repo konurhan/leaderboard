@@ -305,7 +305,8 @@ public class ScrollController : MonoBehaviour
             effectiveStepCount = stepCount;
         }
         float scrollStepDuration = Mathf.Min(scrollTotalDuration / effectiveStepCount, scrollStepDurationMax);
-        
+        List<float> scrollDurations = DistributeScrollDurations(scrollStepDuration * effectiveStepCount, effectiveStepCount);
+        int durationIndex = 0;
         detachedMyItem.PlayScoreTween(targetScore, scrollStepDuration * effectiveStepCount);
         
         while (totalSteps < stepCount)
@@ -318,8 +319,11 @@ public class ScrollController : MonoBehaviour
             {
                 ease = Ease.Linear;
             }
-            yield return scrollableItemContainer.transform.DOLocalMoveY(scrollStartPosition.y + scrollContentUpdateDistance * direction, scrollStepDuration)
+
+            var effectiveDuration = canReachNearTarget ? scrollDurations[durationIndex] : scrollStepDuration;
+            yield return scrollableItemContainer.transform.DOLocalMoveY(scrollStartPosition.y + scrollContentUpdateDistance * direction, effectiveDuration)
                 .SetEase(ease).WaitForCompletion();
+            durationIndex++;
                 
             if (stepItemCount > 0)//recalculate scroll position on tween complete
             {
@@ -341,5 +345,33 @@ public class ScrollController : MonoBehaviour
         onComplete?.Invoke();
         yield break;
     }
+    
+    List<float> DistributeScrollDurations(float totalDuration, int itemCount, float flatteningPower = 0.6f)
+    {
+        List<float> durations = new List<float>(itemCount);
+        float[] weights = new float[itemCount];
+        float totalWeight = 0f;
+
+        for (int i = 0; i < itemCount; i++)
+        {
+            float t = (float)i / (itemCount - 1);
+            float weight = Mathf.Pow(1f - Mathf.Cos(t * Mathf.PI), flatteningPower);
+            weights[i] = weight;
+            totalWeight += weight;
+        }
+
+        for (int i = 0; i < itemCount; i++)
+        {
+            float normalized = weights[i] / totalWeight;
+            durations.Add(normalized * totalDuration);
+        }
+
+        return durations;
+    }
+
+
+
+
+
     
 }
