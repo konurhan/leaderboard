@@ -236,6 +236,7 @@ MonoBehaviour:
   meItemPlacementDelay: 0.5
   meItemMovingScale: 1.1
   meItemGetNearTargetDuration: 0.5
+  UseDistributedStepDurations: 0
   IsMoving: 0
 --- !u!1 &507790298
 GameObject:

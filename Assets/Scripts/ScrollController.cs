@@ -27,6 +27,7 @@ public class ScrollController : MonoBehaviour
     [SerializeField] private float meItemPlacementDelay = 0.8f;
     [SerializeField] private float meItemMovingScale = 1.2f;
     [SerializeField] private float meItemGetNearTargetDuration = 0.5f;
+    [SerializeField] private bool UseDistributedStepDurations = false;
     
     
     private PlayerDataList _playerDataList;
@@ -36,6 +37,7 @@ public class ScrollController : MonoBehaviour
     private List<PlayerItemController> _playerItemViewList = new List<PlayerItemController>();//TODO: should be generic
 
     public bool IsMoving = false;
+    
 
     private void Update()
     {
@@ -320,7 +322,7 @@ public class ScrollController : MonoBehaviour
                 ease = Ease.Linear;
             }
 
-            var effectiveDuration = canReachNearTarget ? scrollDurations[durationIndex] : scrollStepDuration;
+            var effectiveDuration = canReachNearTarget && UseDistributedStepDurations ? scrollDurations[durationIndex] : scrollStepDuration;
             yield return scrollableItemContainer.transform.DOLocalMoveY(scrollStartPosition.y + scrollContentUpdateDistance * direction, effectiveDuration)
                 .SetEase(ease).WaitForCompletion();
             durationIndex++;
