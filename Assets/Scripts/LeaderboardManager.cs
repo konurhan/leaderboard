@@ -46,6 +46,10 @@ public class LeaderboardManager : MonoBehaviour
     
     public void UpdateScrollController()
     {
+        if (leaderboardScrollController.IsMoving)
+        {
+            return;
+        }
         PlayerData myPlayerData;
         if (putUserInRank)
         {
@@ -55,8 +59,11 @@ public class LeaderboardManager : MonoBehaviour
         {
             myPlayerData = UpdateLeaderboardRandom();
         }
-        
-        leaderboardScrollController.UpdateViewAndScroll(_playerDataList, myPlayerData, _myDataIndex);
+
+        if (myPlayerData != null)
+        {
+            leaderboardScrollController.UpdateViewAndScroll(_playerDataList, myPlayerData, _myDataIndex);
+        }
     }
 
     public void InsertSortAndCache(PlayerData playerData = null)
@@ -69,15 +76,18 @@ public class LeaderboardManager : MonoBehaviour
         CacheMyPlayerDataIndex();
     }
     
-    private void CacheMyPlayerDataIndex()
+    private bool CacheMyPlayerDataIndex()
     {
         for (int i = 0; i < _playerDataList.players.Count; i++)
         {
             if (_playerDataList.players[i].id == MyId)
             {
+                bool myIndexChanged = _myDataIndex != i;
                 _myDataIndex = i;
+                return myIndexChanged;
             }
         }
+        return false;
     }
 
     private void SortPlayersByScoreDescending()
@@ -89,18 +99,31 @@ public class LeaderboardManager : MonoBehaviour
     {
         LeaderboardUtils.RandomizeScores(_playerDataList);
         SortPlayersByScoreDescending();
-        CacheMyPlayerDataIndex();
-        PlayerData myPlayerData = LeaderboardUtils.ExtractMeFromList(_playerDataList);
-        SortPlayersByScoreDescending();
-        return myPlayerData;
+        bool indexChanged = CacheMyPlayerDataIndex();
+        if (indexChanged)
+        {
+            PlayerData myPlayerData = LeaderboardUtils.ExtractMeFromList(_playerDataList);
+            SortPlayersByScoreDescending();
+            return myPlayerData;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public PlayerData UpdateLeaderboardPredefinedRank()
     {
         LeaderboardUtils.RandomizeScoresWithMeAtRankAndSort(_playerDataList, desiredRank);
-        CacheMyPlayerDataIndex();
-        PlayerData myPlayerData = LeaderboardUtils.ExtractMeFromList(_playerDataList);
-        return myPlayerData;
+        bool indexChanged = CacheMyPlayerDataIndex();
+        if (indexChanged)
+        {
+            return LeaderboardUtils.ExtractMeFromList(_playerDataList);
+        }
+        else
+        {
+            return null;
+        }
     }
 
 #if UNITY_EDITOR

@@ -35,8 +35,7 @@ public class ScrollController : MonoBehaviour
     private PlayerData _myPlayerData;
     private List<PlayerItemController> _playerItemViewList = new List<PlayerItemController>();//TODO: should be generic
 
-    //[SerializeField] private TextMeshProUGUI centeredText;
-    //[SerializeField] private TextMeshProUGUI scrollPos;
+    public bool IsMoving = false;
 
     private void Update()
     {
@@ -132,6 +131,7 @@ public class ScrollController : MonoBehaviour
     
     public void UpdateViewAndScroll(PlayerDataList playerDataListNew, PlayerData myPlayerDataNew, int myIndexNew)//TODO: test for player count < visibleitemCount
     {
+        IsMoving = true;
         int targetCenteredIndex = _currentCenteredIndex;
         if (playerDataListNew.players.Count > visibleItemCount)
         {
@@ -174,14 +174,12 @@ public class ScrollController : MonoBehaviour
         }
         detachedCopy.transform.DOScale(Vector3.one * meItemMovingScale, 0.5f);//scale up when starting to move
         
-        //bool rankUp = targetCenteredIndex < _currentCenteredIndex;
         bool rankUp = myIndexNew < _myIndex;
         bool canReachNearTarget = Math.Abs(targetCenteredIndex - myIndexNew) == 1 || verticalDisplacementSteps < 1; 
         StartCoroutine(ScrollRoutine(_currentCenteredIndex, verticalDisplacementSteps,
             !rankUp, canReachNearTarget,
             detachedCopy.GetComponent<PlayerItemController>(), myPlayerDataNew.score,
             () => InsertDetachedMyPlayerItem(detachedCopy, myPlayerDataNew, myIndexNew, rankUp, canReachNearTarget)));
-        //_currentCenteredIndex = targetCenteredIndex;
     }
 
     private void InsertDetachedMyPlayerItem(GameObject detachedItem, PlayerData myPlayerDataNew, int myIndexNew, bool rankUp, bool canReachNearTarget)
@@ -189,11 +187,12 @@ public class ScrollController : MonoBehaviour
         Action<int> onTweenComplete = (int occupantIndex) =>
         {
             LeaderboardManager.Instance.InsertSortAndCache(myPlayerDataNew);
-            UpdateItemViews(_currentCenteredIndex);
+            UpdateItemViews(rankUp ? _currentCenteredIndex : myIndexNew);
             detachedItem.transform.SetParent(scrollableItemContainer.transform, true);
             detachedItem.transform.SetSiblingIndex(occupantIndex);
             FixItemPositions();
             _myIndex = myIndexNew;
+            IsMoving = false;
         };
         
         if (_playerItemViewList.Count >= totalItemCount)
@@ -211,12 +210,20 @@ public class ScrollController : MonoBehaviour
                 Destroy(playerItemViewFirst.gameObject);
             }
         }
-        int occupantItemIndex = FindOccupantItemIndex(myIndexNew);
+        int occupantItemIndex = FindOccupantItemIndex(myIndexNew, rankUp);
         Vector3 occupantItemPos = _playerItemViewList[occupantItemIndex].transform.position;
 
         detachedItem.transform.DOKill();
         bool applyGetNearDelay = false;
-        if (!canReachNearTarget)//first get near target position
+        /*if (!canReachNearTarget)//first get near target position
+        {
+            applyGetNearDelay = true;
+            Vector3 nearTargetPos = rankUp
+                ? new Vector3(0, -verticalDistance * 0.8f, 0)
+                : new Vector3(0, verticalDistance * 0.8f, 0);
+            detachedItem.transform.DOMove(occupantItemPos + nearTargetPos, meItemGetNearTargetDuration).SetEase(Ease.OutCirc);
+        }*/
+        if (MathF.Abs(occupantItemPos.y - detachedItem.transform.position.y) > verticalDistance * 0.8f)//first get near target position
         {
             applyGetNearDelay = true;
             Vector3 nearTargetPos = rankUp
@@ -239,8 +246,10 @@ public class ScrollController : MonoBehaviour
             {
                 item.DOMoveY(item.transform.position.y - verticalDistance, meItemPlacementDuration).SetDelay(delay);
             }
-            detachedItem.transform.DOMove(occupantItemPos, meItemPlacementDuration).SetDelay(delay).onComplete +=
-                () => onTweenComplete(occupantItemIndex);
+            detachedItem.transform.DOMove(occupantItemPos, meItemPlacementDuration).SetDelay(delay).OnComplete(() =>
+            {
+                onTweenComplete(occupantItemIndex);
+            });
             detachedItem.transform.DOScale(Vector3.one, meItemPlacementDuration).SetDelay(delay);
         }
         else
@@ -256,19 +265,24 @@ public class ScrollController : MonoBehaviour
             {
                 item.DOMoveY(item.transform.position.y + verticalDistance, meItemPlacementDuration).SetDelay(delay);
             }
-            detachedItem.transform.DOMove(occupantItemPos, meItemPlacementDuration).SetDelay(delay).onComplete +=
-                () => onTweenComplete(occupantItemIndex);
+
+            detachedItem.transform.DOMove(occupantItemPos, meItemPlacementDuration).SetDelay(delay).OnComplete(() =>
+            {
+                onTweenComplete(occupantItemIndex);
+            });
+            
             detachedItem.transform.DOScale(Vector3.one, meItemPlacementDuration).SetDelay(delay);
         }
     }
 
-    private int FindOccupantItemIndex(int playerIndex)
+    private int FindOccupantItemIndex(int playerIndex, bool rankUp)
     {
-        if (!_playerItemViewList.Find(p => p.GetId() == _playerDataList.players[playerIndex].id))
+        int correctedIndex = rankUp ? playerIndex : playerIndex - 1;
+        if (!_playerItemViewList.Find(p => p.GetId() == _playerDataList.players[correctedIndex].id))
         {
             Debug.LogError("occupantItem is null");
         }
-        return _playerItemViewList.FindIndex(p => p.GetId() == _playerDataList.players[playerIndex].id);
+        return _playerItemViewList.FindIndex(p => p.GetId() == _playerDataList.players[correctedIndex].id);
     }
     
     private IEnumerator ScrollRoutine(int centeredIndex, int stepCount, bool moveScrollUp, bool canReachNearTarget,
@@ -307,7 +321,7 @@ public class ScrollController : MonoBehaviour
             yield return scrollableItemContainer.transform.DOLocalMoveY(scrollStartPosition.y + scrollContentUpdateDistance * direction, scrollStepDuration)
                 .SetEase(ease).WaitForCompletion();
                 
-            if (stepItemCount > 0)//recalculate on tween complete
+            if (stepItemCount > 0)//recalculate scroll position on tween complete
             {
                 totalSteps += stepItemCount;
                 if (stepItemRemainingCount > 0)
