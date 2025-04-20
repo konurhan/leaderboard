@@ -28,6 +28,7 @@ public class ScrollController : MonoBehaviour
     [SerializeField] private float meItemMovingScale = 1.2f;
     [SerializeField] private float meItemGetNearTargetDuration = 0.5f;
     [SerializeField] private bool UseDistributedStepDurations = false;
+    [SerializeField] private AnimationCurve scrollSpeedCurve;
     
     
     private PlayerDataList _playerDataList;
@@ -189,7 +190,7 @@ public class ScrollController : MonoBehaviour
         Action<int> onTweenComplete = (int occupantIndex) =>
         {
             LeaderboardManager.Instance.InsertSortAndCache(myPlayerDataNew);
-            UpdateItemViews(rankUp ? _currentCenteredIndex : myIndexNew);
+            UpdateItemViews(rankUp ? _currentCenteredIndex : _currentCenteredIndex + 1);
             detachedItem.transform.SetParent(scrollableItemContainer.transform, true);
             detachedItem.transform.SetSiblingIndex(occupantIndex);
             FixItemPositions();
@@ -322,7 +323,8 @@ public class ScrollController : MonoBehaviour
                 ease = Ease.Linear;
             }
 
-            var effectiveDuration = canReachNearTarget && UseDistributedStepDurations ? scrollDurations[durationIndex] : scrollStepDuration;
+            //var effectiveDuration = canReachNearTarget && UseDistributedStepDurations ? scrollDurations[durationIndex] : scrollStepDuration;
+            var effectiveDuration = canReachNearTarget && UseDistributedStepDurations ? scrollDurations[durationIndex] : scrollStepDurationMax * scrollSpeedCurve.Evaluate((float)totalSteps / stepCount);
             yield return scrollableItemContainer.transform.DOLocalMoveY(scrollStartPosition.y + scrollContentUpdateDistance * direction, effectiveDuration)
                 .SetEase(ease).WaitForCompletion();
             durationIndex++;

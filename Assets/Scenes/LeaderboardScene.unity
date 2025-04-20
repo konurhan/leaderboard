@@ -224,8 +224,8 @@ MonoBehaviour:
   scrollableItemContainer: {fileID: 1094171589}
   detachedItemContainer: {fileID: 1113745440}
   viewPortAreaPlaceholder: {fileID: 445877262}
-  visibleItemCount: 7
-  totalItemCount: 9
+  visibleItemCount: 6
+  totalItemCount: 8
   verticalDistance: 1
   scrollContentUpdateDistance: 1.8
   scrollTotalDuration: 2.5
@@ -237,6 +237,48 @@ MonoBehaviour:
   meItemMovingScale: 1.1
   meItemGetNearTargetDuration: 0.5
   UseDistributedStepDurations: 0
+  scrollSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.9999999
+      inSlope: -1.5737932
+      outSlope: -1.5737932
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.4187237
+      value: 0.3410154
+      inSlope: -0.5880776
+      outSlope: -0.5880776
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.090123326
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.56168365
+      value: 0.34101754
+      inSlope: 0.5016222
+      outSlope: 0.5016222
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09855069
+      outWeight: 0.07947003
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.5034403
+      outSlope: 1.5034403
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   IsMoving: 0
 --- !u!1 &507790298
 GameObject:
